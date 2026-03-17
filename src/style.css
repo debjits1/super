@@ -1,0 +1,221 @@
+:root {
+  color: #f6eee3;
+  font-family: 'Space Grotesk', 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(circle at top, rgba(94, 188, 255, 0.18), transparent 28%),
+    linear-gradient(180deg, #060b12, #0b111a 40%, #05070c);
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  margin: 0;
+  min-height: 100%;
+  width: 100%;
+}
+
+body {
+  overflow: hidden;
+}
+
+button,
+a {
+  font: inherit;
+}
+
+.experience-canvas {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+.overlay-shell {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+}
+
+.eyebrow,
+.panel-kicker {
+  color: #8fe7ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  margin: 0 0 0.65rem;
+  text-transform: uppercase;
+}
+
+.detail-panel h2 {
+  font-size: clamp(1.8rem, 4vw, 3.2rem);
+  line-height: 0.94;
+  margin: 0;
+}
+
+.panel-body,
+.panel-list {
+  color: rgba(246, 238, 227, 0.82);
+  line-height: 1.5;
+}
+
+.interaction-prompt {
+  background: rgba(9, 13, 19, 0.82);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  bottom: 9rem;
+  display: flex;
+  gap: 0.85rem;
+  left: 50%;
+  padding: 0.85rem 1.1rem;
+  position: absolute;
+  transform: translateX(-50%);
+  transition: opacity 180ms ease, transform 180ms ease;
+  backdrop-filter: blur(12px);
+}
+
+.prompt-title {
+  color: #fff3de;
+  font-weight: 700;
+}
+
+.prompt-body {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.detail-panel {
+  background: linear-gradient(180deg, rgba(7, 10, 15, 0.96), rgba(12, 18, 27, 0.88));
+  border: 1px solid rgba(168, 220, 255, 0.18);
+  border-radius: 1.75rem;
+  max-width: 30rem;
+  padding: 1.3rem 1.3rem 1.4rem;
+  pointer-events: auto;
+  position: absolute;
+  right: 1.25rem;
+  top: 1.25rem;
+  width: min(calc(100vw - 2rem), 30rem);
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.35);
+}
+
+.close-button,
+.panel-link,
+.pad-button,
+.interact-button {
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.close-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f7ecdd;
+  float: right;
+  padding: 0.55rem 0.85rem;
+}
+
+.panel-body {
+  margin: 0.7rem 0 1rem;
+}
+
+.panel-list {
+  margin: 0 0 1.2rem;
+  padding-left: 1.2rem;
+}
+
+.panel-link {
+  background: linear-gradient(135deg, #ff845f, #ffd166);
+  color: #1a1110;
+  display: inline-flex;
+  font-weight: 700;
+  padding: 0.8rem 1rem;
+  pointer-events: auto;
+  text-decoration: none;
+}
+
+.mobile-controls {
+  align-items: end;
+  bottom: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  left: 1rem;
+  position: absolute;
+  right: 1rem;
+}
+
+.direction-pad {
+  display: grid;
+  gap: 0.55rem;
+  grid-template-areas:
+    '. up .'
+    'left down right';
+  grid-template-columns: repeat(3, 4rem);
+  grid-template-rows: repeat(2, 4rem);
+  pointer-events: auto;
+}
+
+.pad-up { grid-area: up; }
+.pad-left { grid-area: left; }
+.pad-down { grid-area: down; }
+.pad-right { grid-area: right; }
+
+.pad-button,
+.interact-button {
+  background: rgba(255, 255, 255, 0.08);
+  color: #f4eadc;
+  min-height: 4rem;
+  min-width: 4rem;
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.pad-button:active,
+.interact-button:active {
+  transform: scale(0.96);
+}
+
+.action-cluster {
+  pointer-events: auto;
+}
+
+.interact-button {
+  background: linear-gradient(135deg, rgba(255, 115, 87, 0.96), rgba(255, 209, 102, 0.92));
+  color: #1f1410;
+  font-weight: 700;
+  min-width: 6.25rem;
+  padding: 0 1.2rem;
+}
+
+.interact-button:disabled {
+  cursor: default;
+  filter: grayscale(0.75);
+  opacity: 0.5;
+}
+
+.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.5rem);
+}
+
+@media (min-width: 901px) {
+  .mobile-controls {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .detail-panel {
+    left: 0.75rem;
+    right: 0.75rem;
+    top: auto;
+    bottom: 7rem;
+    width: auto;
+  }
+
+  .interaction-prompt {
+    bottom: 6.4rem;
+    width: calc(100vw - 1.5rem);
+  }
+}
