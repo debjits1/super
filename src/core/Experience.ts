@@ -52,8 +52,13 @@ export class Experience {
       onClosePanel: () => this.ui.hidePanel(),
     });
 
-    this.room.initialize().catch((error) => {
-      console.error('Failed to initialize room:', error);
+    Promise.all([
+      this.room.initialize(),
+    ]).then(() => {
+      this.hideLoadingOverlay();
+    }).catch((error) => {
+      console.error('Failed to initialize experience:', error);
+      this.hideLoadingOverlay();
     });
 
     window.addEventListener('resize', this.onResize);
@@ -171,4 +176,14 @@ export class Experience {
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     this.renderer.setSize(window.innerWidth, window.innerHeight);
   };
+
+  private hideLoadingOverlay() {
+    const overlay = document.querySelector('#loading-overlay');
+    if (overlay) {
+      overlay.classList.add('is-hidden');
+      setTimeout(() => {
+        overlay.remove();
+      }, 400);
+    }
+  }
 }
