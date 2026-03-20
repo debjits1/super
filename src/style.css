@@ -215,7 +215,7 @@ a {
   }
 
   .interaction-prompt {
-    bottom: 6.4rem;
+    bottom: 10.4rem;
     width: calc(100vw - 1.5rem);
   }
 }

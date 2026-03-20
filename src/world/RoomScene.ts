@@ -19,6 +19,7 @@ import {
   TorusGeometry,
   Vector3,
 } from 'three';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
 
 import type { HotspotId } from '../data/portfolio';
 
@@ -35,6 +36,8 @@ export class RoomScene {
   readonly roomBounds = new Box3(new Vector3(-9.2, 0, -8.2), new Vector3(9.2, 5.6, 8.2));
   readonly blockers: Box3[] = [];
   readonly hotspots: Hotspot[] = [];
+  private fbxLoader = new FBXLoader();
+  private workstationGroup: Group | null = null;
 
   constructor() {
     this.scene.background = new Color('#0f1722');
@@ -42,6 +45,10 @@ export class RoomScene {
     this.buildLights();
     this.buildShell();
     this.buildSetPieces();
+  }
+
+  async initialize() {
+    await this.loadWorkstationModel();
   }
 
   mountInto(parent: Scene) {
@@ -134,7 +141,6 @@ export class RoomScene {
 
     this.buildEntryGallery(darkMaterial, glowMaterial);
     this.buildFloorSignage();
-    this.buildMainWorkstation(deskMaterial, darkMaterial, glowMaterial);
     this.buildProjectArchive(darkMaterial, glowMaterial);
     this.buildSkillsLab(darkMaterial, glowMaterial);
     this.buildExperienceArchive(darkMaterial, glowMaterial);
@@ -154,7 +160,7 @@ export class RoomScene {
         id: 'featured-projects',
         title: 'Featured Projects',
         prompt: 'Open flagship work',
-        position: new Vector3(0, 0, -6.15),
+        position: new Vector3(0, 0, -5.15),
         color: '#5de2ff',
       }),
       this.createHotspot({
@@ -277,57 +283,42 @@ export class RoomScene {
     return plane;
   }
 
-  private buildMainWorkstation(
-    deskMaterial: MeshStandardMaterial,
-    darkMaterial: MeshStandardMaterial,
-    glowMaterial: MeshStandardMaterial,
-  ) {
-    const desk = new Group();
-    desk.position.set(0, 0, -7.2);
-
-    const surface = new Mesh(new BoxGeometry(4.8, 0.2, 2), deskMaterial);
-    surface.position.y = 1.04;
-    desk.add(surface);
-
-    for (const x of [-2.05, -0.7, 0.7, 2.05]) {
-      const leg = new Mesh(new BoxGeometry(0.18, 1.02, 0.18), darkMaterial);
-      leg.position.set(x, 0.51, x < 0 ? -0.7 : 0.7);
-      desk.add(leg);
+  private async loadWorkstationModel() {
+    try {
+      const workstation = await this.fbxLoader.loadAsync('/resources/models/workstation.fbx');
+      
+      // Remove any existing workstation if reloading
+      if (this.workstationGroup) {
+        this.scene.remove(this.workstationGroup);
+      }
+      
+      this.workstationGroup = new Group();
+      this.workstationGroup.position.set(0, 0, -4.2);
+      this.workstationGroup.rotation.y = -Math.PI / 2;
+      
+      // Scale down the model to fit the scene (original is ~837 units, we need ~5)
+      const scale = 0.005;
+      workstation.scale.set(scale, scale, scale);
+      
+      workstation.traverse((child) => {
+        if (child instanceof Mesh) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      });
+      
+      this.workstationGroup.add(workstation);
+      this.scene.add(this.workstationGroup);
+      
+      console.log('Workstation group added to scene at position:', this.workstationGroup.position);
+      console.log('Applied scale:', scale);
+      
+      // Add blocker for the workstation area
+      this.addBlockerFromCenter(new Vector3(0, 0.8, -6.2), new Vector3(5.2, 1.8, 2.6));
+      this.addBlockerFromCenter(new Vector3(3.4, 0.8, -6.42), new Vector3(1.1, 1.8, 1.3));
+    } catch (error) {
+      console.error('Failed to load workstation FBX model:', error);
     }
-
-    const monitorLeft = new Mesh(new BoxGeometry(1.2, 0.78, 0.08), glowMaterial);
-    monitorLeft.position.set(-1.05, 1.7, -0.78);
-    desk.add(monitorLeft);
-
-    const monitorCenter = new Mesh(new BoxGeometry(1.65, 0.9, 0.08), glowMaterial);
-    monitorCenter.position.set(0.1, 1.8, -0.82);
-    desk.add(monitorCenter);
-
-    const monitorRight = new Mesh(new BoxGeometry(1.2, 0.78, 0.08), glowMaterial);
-    monitorRight.position.set(1.45, 1.7, -0.76);
-    desk.add(monitorRight);
-
-    for (const x of [-1.05, 0.1, 1.45]) {
-      const stand = new Mesh(new CylinderGeometry(0.06, 0.08, 0.62, 10), darkMaterial);
-      stand.position.set(x, 1.35, -0.62);
-      desk.add(stand);
-    }
-
-    const keyboard = new Mesh(new BoxGeometry(1.2, 0.05, 0.42), darkMaterial);
-    keyboard.position.set(0.1, 1.12, -0.28);
-    desk.add(keyboard);
-
-    const mat = new Mesh(new BoxGeometry(2.6, 0.03, 1.05), new MeshStandardMaterial({ color: '#23384a' }));
-    mat.position.set(0, 1.08, 0.18);
-    desk.add(mat);
-
-    const tower = new Mesh(new BoxGeometry(0.72, 1.38, 1.02), darkMaterial);
-    tower.position.set(3.4, 0.69, -0.22);
-    desk.add(tower);
-
-    this.scene.add(desk);
-    this.addBlockerFromCenter(new Vector3(0, 0.8, -7.2), new Vector3(5.2, 1.8, 2.6));
-    this.addBlockerFromCenter(new Vector3(3.4, 0.8, -7.42), new Vector3(1.1, 1.8, 1.3));
   }
 
   private buildProjectArchive(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
@@ -489,11 +480,6 @@ export class RoomScene {
     const planterRight = this.createPlanter(darkMaterial, glowMaterial);
     planterRight.position.set(8.3, 0, 7.2);
     this.scene.add(planterRight);
-
-    const island = new Mesh(new BoxGeometry(2.6, 0.95, 1.4), deskMaterial);
-    island.position.set(0, 0.48, 1.7);
-    this.scene.add(island);
-    this.addBlockerFromCenter(new Vector3(0, 0.48, 1.7), new Vector3(2.9, 1.1, 1.7));
   }
 
   private createPlanter(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {

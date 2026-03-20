@@ -141,14 +141,24 @@ export class OverlayUI {
     button.className = 'pad-button';
     button.type = 'button';
     button.textContent = label;
+    button.style.userSelect = 'none';
+    button.style.webkitUserSelect = 'none';
+    button.style.touchAction = 'none';
 
-    const press = () => this.options.onDirectionChange(direction, true);
-    const release = () => this.options.onDirectionChange(direction, false);
+    const press = (e: PointerEvent) => {
+      e.preventDefault();
+      this.options.onDirectionChange(direction, true);
+    };
+    const release = (e: PointerEvent) => {
+      e.preventDefault();
+      this.options.onDirectionChange(direction, false);
+    };
 
-    button.addEventListener('pointerdown', press);
-    button.addEventListener('pointerup', release);
-    button.addEventListener('pointerleave', release);
-    button.addEventListener('pointercancel', release);
+    button.addEventListener('pointerdown', press, { passive: false });
+    button.addEventListener('pointerup', release, { passive: false });
+    button.addEventListener('pointerleave', release, { passive: false });
+    button.addEventListener('pointercancel', release, { passive: false });
+    button.addEventListener('selectstart', (e) => e.preventDefault());
 
     return button;
   }

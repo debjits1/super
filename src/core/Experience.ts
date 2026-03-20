@@ -52,6 +52,10 @@ export class Experience {
       onClosePanel: () => this.ui.hidePanel(),
     });
 
+    this.room.initialize().catch((error) => {
+      console.error('Failed to initialize room:', error);
+    });
+
     window.addEventListener('resize', this.onResize);
     this.animate();
   }
