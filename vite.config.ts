@@ -4,4 +4,8 @@ export default defineConfig({
   server: {
     host: true,
   },
+  build: {
+    copyPublicDir: true,
+  },
+  publicDir: 'resources',
 });
