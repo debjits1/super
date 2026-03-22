@@ -22,7 +22,7 @@ export class Experience {
   private readonly room = new RoomScene();
   private readonly player = new PlayerController();
   private readonly cameraTarget = new Vector3();
-  private readonly cameraOffset = new Vector3(0, 6.5, 4.8);
+  private readonly cameraOffset = new Vector3(0, 5, 6.8);
   private readonly introCameraPosition = new Vector3(3.2, 4.6, 10.8);
   private readonly introCameraTarget = new Vector3(0, 1.2, 1.9);
   private readonly unitScale = new Vector3(1, 1, 1);

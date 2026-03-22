@@ -139,13 +139,13 @@ export class RoomScene {
       metalness: 0.1,
     });
 
-    this.buildEntryGallery(darkMaterial, glowMaterial);
+    // this.buildEntryGallery(darkMaterial, glowMaterial);
     this.buildFloorSignage();
     this.buildProjectArchive(darkMaterial, glowMaterial);
     this.buildSkillsLab(darkMaterial, glowMaterial);
     this.buildExperienceArchive(darkMaterial, glowMaterial);
     this.buildAchievementsCorner(darkMaterial, glowMaterial);
-    this.buildContactTerminal(darkMaterial, glowMaterial);
+    // this.buildContactTerminal(darkMaterial, glowMaterial);
     this.buildAmbientProps(deskMaterial, darkMaterial, glowMaterial);
 
     this.hotspots.push(
