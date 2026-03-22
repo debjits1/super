@@ -201,23 +201,23 @@ export class RoomScene {
     );
   }
 
-  private buildEntryGallery(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
-    const arch = new Mesh(new BoxGeometry(5.2, 0.28, 0.4), darkMaterial);
-    arch.position.set(0, 3.35, 7.05);
-    this.scene.add(arch);
+  // private buildEntryGallery(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
+  //   const arch = new Mesh(new BoxGeometry(5.2, 0.28, 0.4), darkMaterial);
+  //   arch.position.set(0, 3.35, 7.05);
+  //   this.scene.add(arch);
 
-    const leftPillar = new Mesh(new BoxGeometry(0.42, 3.4, 0.42), darkMaterial);
-    leftPillar.position.set(-2.2, 1.7, 7.05);
-    this.scene.add(leftPillar);
+  //   const leftPillar = new Mesh(new BoxGeometry(0.42, 3.4, 0.42), darkMaterial);
+  //   leftPillar.position.set(-2.2, 1.7, 7.05);
+  //   this.scene.add(leftPillar);
 
-    const rightPillar = leftPillar.clone();
-    rightPillar.position.x = 2.2;
-    this.scene.add(rightPillar);
+  //   const rightPillar = leftPillar.clone();
+  //   rightPillar.position.x = 2.2;
+  //   this.scene.add(rightPillar);
 
-    const sign = new Mesh(new BoxGeometry(3.4, 0.9, 0.08), glowMaterial);
-    sign.position.set(0, 2.45, 8.4);
-    this.scene.add(sign);
-  }
+  //   const sign = new Mesh(new BoxGeometry(3.4, 0.9, 0.08), glowMaterial);
+  //   sign.position.set(0, 2.45, 8.4);
+  //   this.scene.add(sign);
+  // }
 
   private buildFloorSignage() {
     const nameSign = this.createFloorTextPlane({
@@ -426,29 +426,29 @@ export class RoomScene {
     this.addBlockerFromCenter(new Vector3(6.7, 0.85, 3.6), new Vector3(3, 1.8, 1.5));
   }
 
-  private buildContactTerminal(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
-    const terminal = new Group();
-    terminal.position.set(0, 0, 6.2);
+  // private buildContactTerminal(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
+  //   const terminal = new Group();
+  //   terminal.position.set(0, 0, 6.2);
 
-    const pedestal = new Mesh(new CylinderGeometry(0.7, 0.82, 1.18, 14), darkMaterial);
-    pedestal.position.y = 0.59;
-    terminal.add(pedestal);
+  //   const pedestal = new Mesh(new CylinderGeometry(0.7, 0.82, 1.18, 14), darkMaterial);
+  //   pedestal.position.y = 0.59;
+  //   terminal.add(pedestal);
 
-    const screenArm = new Mesh(new BoxGeometry(0.18, 1.1, 0.18), darkMaterial);
-    screenArm.position.set(0, 1.55, -0.18);
-    terminal.add(screenArm);
+  //   const screenArm = new Mesh(new BoxGeometry(0.18, 1.1, 0.18), darkMaterial);
+  //   screenArm.position.set(0, 1.55, -0.18);
+  //   terminal.add(screenArm);
 
-    const screen = new Mesh(new BoxGeometry(1.85, 1.05, 0.12), glowMaterial);
-    screen.position.set(0, 2.15, -0.42);
-    terminal.add(screen);
+  //   const screen = new Mesh(new BoxGeometry(1.85, 1.05, 0.12), glowMaterial);
+  //   screen.position.set(0, 2.15, -0.42);
+  //   terminal.add(screen);
 
-    const keyboard = new Mesh(new BoxGeometry(1.45, 0.08, 0.62), darkMaterial);
-    keyboard.position.set(0, 1.2, 0.26);
-    terminal.add(keyboard);
+  //   const keyboard = new Mesh(new BoxGeometry(1.45, 0.08, 0.62), darkMaterial);
+  //   keyboard.position.set(0, 1.2, 0.26);
+  //   terminal.add(keyboard);
 
-    this.scene.add(terminal);
-    this.addBlockerFromCenter(new Vector3(0, 1.1, 6.2), new Vector3(2.4, 2.4, 1.8));
-  }
+  //   this.scene.add(terminal);
+  //   this.addBlockerFromCenter(new Vector3(0, 1.1, 6.2), new Vector3(2.4, 2.4, 1.8));
+  // }
 
   private buildAmbientProps(
     deskMaterial: MeshStandardMaterial,
