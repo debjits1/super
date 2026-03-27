@@ -43,7 +43,7 @@ export class PlayerController {
       loader.load(characterPath, resolve, undefined, reject);
     });
     this.model = characterFbx;
-    this.model.scale.set(0.02, 0.02, 0.02);
+    this.model.scale.set(0.1, 0.1, 0.1);
     this.root.add(this.model);
     this.mixer = new AnimationMixer(this.model);
     console.log('Character model loaded');
