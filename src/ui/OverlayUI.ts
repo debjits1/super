@@ -104,21 +104,97 @@ export class OverlayUI {
     this.root.remove();
   }
 
+  private joystickState: Record<Direction, boolean> = {
+    up: false,
+    down: false,
+    left: false,
+    right: false,
+  };
+
+  private activePointerId: number | null = null;
+
   private buildDirectionPad() {
     const pad = document.createElement('div');
-    pad.className = 'direction-pad';
+    pad.className = 'direction-joystick';
 
-    const up = this.buildHoldButton('up', '▲');
-    up.classList.add('pad-up');
-    const left = this.buildHoldButton('left', '◀');
-    left.classList.add('pad-left');
-    const down = this.buildHoldButton('down', '▼');
-    down.classList.add('pad-down');
-    const right = this.buildHoldButton('right', '▶');
-    right.classList.add('pad-right');
+    const base = document.createElement('div');
+    base.className = 'joystick-base';
+    const knob = document.createElement('div');
+    knob.className = 'joystick-knob';
+    base.append(knob);
+    pad.append(base);
 
-    pad.append(up, left, down, right);
+    const updateJoystick = (clientX: number, clientY: number) => {
+      const rect = base.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const deltaX = clientX - centerX;
+      const deltaY = clientY - centerY;
+      const distance = Math.hypot(deltaX, deltaY);
+      const maxDistance = rect.width * 0.35;
+      const clampedDistance = Math.min(distance, maxDistance);
+      const normalizedX = distance > 0 ? deltaX / distance : 0;
+      const normalizedY = distance > 0 ? deltaY / distance : 0;
+
+      knob.style.transform = `translate(${normalizedX * clampedDistance}px, ${normalizedY * clampedDistance}px)`;
+
+      const threshold = rect.width * 0.15;
+      this.setDirectionState('up', deltaY < -threshold);
+      this.setDirectionState('down', deltaY > threshold);
+      this.setDirectionState('left', deltaX < -threshold);
+      this.setDirectionState('right', deltaX > threshold);
+    };
+
+    const resetJoystick = () => {
+      knob.style.transform = 'translate(0, 0)';
+      Object.keys(this.joystickState).forEach((direction) => {
+        if (this.joystickState[direction as Direction]) {
+          this.setDirectionState(direction as Direction, false);
+        }
+      });
+      this.activePointerId = null;
+    };
+
+    const onPointerMove = (event: PointerEvent) => {
+      if (event.pointerId !== this.activePointerId) {
+        return;
+      }
+      event.preventDefault();
+      updateJoystick(event.clientX, event.clientY);
+    };
+
+    const onPointerUp = (event: PointerEvent) => {
+      if (event.pointerId !== this.activePointerId) {
+        return;
+      }
+      event.preventDefault();
+      resetJoystick();
+      window.removeEventListener('pointermove', onPointerMove);
+      window.removeEventListener('pointerup', onPointerUp);
+      window.removeEventListener('pointercancel', onPointerUp);
+    };
+
+    base.style.touchAction = 'none';
+    base.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      base.setPointerCapture(event.pointerId);
+      this.activePointerId = event.pointerId;
+      updateJoystick(event.clientX, event.clientY);
+      window.addEventListener('pointermove', onPointerMove, { passive: false });
+      window.addEventListener('pointerup', onPointerUp, { passive: false });
+      window.addEventListener('pointercancel', onPointerUp, { passive: false });
+    }, { passive: false });
+
     return pad;
+  }
+
+  private setDirectionState(direction: Direction, pressed: boolean) {
+    if (this.joystickState[direction] === pressed) {
+      return;
+    }
+
+    this.joystickState[direction] = pressed;
+    this.options.onDirectionChange(direction, pressed);
   }
 
   private buildActionCluster() {
@@ -134,32 +210,5 @@ export class OverlayUI {
 
     cluster.append(interact);
     return cluster;
-  }
-
-  private buildHoldButton(direction: Direction, label: string) {
-    const button = document.createElement('button');
-    button.className = 'pad-button';
-    button.type = 'button';
-    button.textContent = label;
-    button.style.userSelect = 'none';
-    button.style.webkitUserSelect = 'none';
-    button.style.touchAction = 'none';
-
-    const press = (e: PointerEvent) => {
-      e.preventDefault();
-      this.options.onDirectionChange(direction, true);
-    };
-    const release = (e: PointerEvent) => {
-      e.preventDefault();
-      this.options.onDirectionChange(direction, false);
-    };
-
-    button.addEventListener('pointerdown', press, { passive: false });
-    button.addEventListener('pointerup', release, { passive: false });
-    button.addEventListener('pointerleave', release, { passive: false });
-    button.addEventListener('pointercancel', release, { passive: false });
-    button.addEventListener('selectstart', (e) => e.preventDefault());
-
-    return button;
   }
 }

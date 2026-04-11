@@ -236,7 +236,7 @@ export class RoomScene {
       height: 1.35,
       lines: [
         { text: 'Move: WASD or Arrow Keys', size: 34, color: '#f4eadc', weight: '600' },
-        { text: 'Interact: E key or tap the mobile button', size: 28, color: '#ffc98d', weight: '500' },
+        { text: 'Interact: E key or tap interact', size: 28, color: '#ffc98d', weight: '500' },
       ],
     });
     instructionSign.position.set(0, 0.031, 4.75);
@@ -317,7 +317,7 @@ export class RoomScene {
       this.addBlockerFromCenter(new Vector3(0, 0.8, -6.2), new Vector3(5.2, 1.8, 2.6));
       this.addBlockerFromCenter(new Vector3(3.4, 0.8, -6.42), new Vector3(1.1, 1.8, 1.3));
     } catch (error) {
-      console.error('Failed to load workstation FBX model:', error);
+      console.error('Failed to load workstation GLTF model:', error);
     }
   }
 

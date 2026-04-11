@@ -197,7 +197,7 @@ export class PlayerController {
     const speed = this.velocity.length();
     // this.bobTime += delta * Math.max(speed * 1.8, 1);
     if (this.model) {
-      this.model.position.y = 0.06;  // Fixed offset; adjust if needed for ground alignment
+      this.model.position.y = 0.0;  // Fixed offset; adjust if needed for ground alignment
     }
 
     // Animation handling: only transition when state changes

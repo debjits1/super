@@ -144,33 +144,49 @@ a {
   right: 1rem;
 }
 
-.direction-pad {
-  display: grid;
-  gap: 0.55rem;
-  grid-template-areas:
-    '. up .'
-    'left down right';
-  grid-template-columns: repeat(3, 4rem);
-  grid-template-rows: repeat(2, 4rem);
+.direction-joystick {
+  align-items: center;
+  display: flex;
+  justify-content: center;
   pointer-events: auto;
 }
 
-.pad-up { grid-area: up; }
-.pad-left { grid-area: left; }
-.pad-down { grid-area: down; }
-.pad-right { grid-area: right; }
-
-.pad-button,
-.interact-button {
+.joystick-base {
+  align-items: center;
   background: rgba(255, 255, 255, 0.08);
-  color: #f4eadc;
-  min-height: 4rem;
-  min-width: 4rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 50%;
+  display: flex;
+  height: 5.5rem;
+  justify-content: center;
+  position: relative;
+  width: 5.5rem;
+}
+
+.joystick-knob {
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+  box-shadow: inset 0 0 0.8rem rgba(0, 0, 0, 0.12);
+  height: 2.3rem;
+  left: 28%;
+  position: absolute;
+  top: 28%;
+  width: 2.3rem;
+  transform: translate(0, 0);
+  transition: transform 80ms ease;
+}
+
+.interact-button {
+  background: linear-gradient(135deg, rgba(255, 115, 87, 0.96), rgba(255, 209, 102, 0.92));
+  color: #1f1410;
+  font-weight: 700;
+  min-width: 6.25rem;
+  padding: 1rem 1.2rem;
   pointer-events: auto;
   touch-action: none;
 }
 
-.pad-button:active,
 .interact-button:active {
   transform: scale(0.96);
 }
@@ -184,7 +200,7 @@ a {
   color: #1f1410;
   font-weight: 700;
   min-width: 6.25rem;
-  padding: 0 1.2rem;
+  padding: 1rem 1.2rem;
 }
 
 .interact-button:disabled {
@@ -255,6 +271,8 @@ a {
     top: auto;
     bottom: 7rem;
     width: auto;
+    max-height: 75vh;
+    overflow-y: scroll;
   }
 
   .interaction-prompt {
