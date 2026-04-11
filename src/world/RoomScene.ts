@@ -235,7 +235,7 @@ export class RoomScene {
       width: 6.2,
       height: 1.35,
       lines: [
-        { text: 'Move: WASD or Arrow Keys', size: 34, color: '#f4eadc', weight: '600' },
+        { text: 'Move: WASD or Drag and rotate the joystick in mobile', size: 34, color: '#f4eadc', weight: '600' },
         { text: 'Interact: E key or tap interact', size: 28, color: '#ffc98d', weight: '500' },
       ],
     });
