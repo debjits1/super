@@ -22,6 +22,7 @@ import {
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import type { HotspotId } from '../data/portfolio';
+import { FBXLoader } from 'three/examples/jsm/Addons.js';
 
 export type Hotspot = {
   id: HotspotId;
@@ -153,7 +154,7 @@ export class RoomScene {
         id: 'about',
         title: 'About Lounge',
         prompt: 'Read profile',
-        position: new Vector3(-7.1, 0, 5.1),
+        position: new Vector3(-7.1, 0, 7.1),
         color: '#ffd166',
       }),
       this.createHotspot({
@@ -188,7 +189,7 @@ export class RoomScene {
         id: 'achievements',
         title: 'Achievements Shelf',
         prompt: 'Review highlights',
-        position: new Vector3(6.2, 0, 3.4),
+        position: new Vector3(6.2, 0, 5.4),
         color: '#ffb95c',
       }),
       this.createHotspot({
@@ -452,34 +453,39 @@ export class RoomScene {
   // }
 
   private async buildAmbientProps(
-    deskMaterial: MeshStandardMaterial,
-    darkMaterial: MeshStandardMaterial,
+    _deskMaterial: MeshStandardMaterial,
+    _darkMaterial: MeshStandardMaterial,
     _glowMaterial: MeshStandardMaterial,
   ) {
-    const lounge = new Group();
+    // const lounge = new Group();
+    // lounge.position.set(-7.15, 0, 5.15);
+
+    // const sofaBase = new Mesh(new BoxGeometry(2.8, 0.55, 1.15), darkMaterial);
+    // sofaBase.position.set(0, 0.28, 0);
+    // lounge.add(sofaBase);
+
+    // const sofaBack = new Mesh(new BoxGeometry(2.8, 0.95, 0.22), darkMaterial);
+    // sofaBack.position.set(0, 0.8, -0.48);
+    // lounge.add(sofaBack);
+
+    // const coffeeTable = new Mesh(new BoxGeometry(1.2, 0.12, 0.74), deskMaterial);
+    // coffeeTable.position.set(0.15, 0.36, 1.1);
+    // lounge.add(coffeeTable);
+    const loader = new FBXLoader();
+    const lounge = await new Promise<Object3D>((resolve, reject) => {
+      loader.load('/resources/models/sofa.fbx', resolve, undefined, reject);
+    });
+    lounge.scale.set(0.02, 0.04, 0.02);
     lounge.position.set(-7.15, 0, 5.15);
-
-    const sofaBase = new Mesh(new BoxGeometry(2.8, 0.55, 1.15), darkMaterial);
-    sofaBase.position.set(0, 0.28, 0);
-    lounge.add(sofaBase);
-
-    const sofaBack = new Mesh(new BoxGeometry(2.8, 0.95, 0.22), darkMaterial);
-    sofaBack.position.set(0, 0.8, -0.48);
-    lounge.add(sofaBack);
-
-    const coffeeTable = new Mesh(new BoxGeometry(1.2, 0.12, 0.74), deskMaterial);
-    coffeeTable.position.set(0.15, 0.36, 1.1);
-    lounge.add(coffeeTable);
-
     this.scene.add(lounge);
-    this.addBlockerFromCenter(new Vector3(-7.15, 0.55, 5.15), new Vector3(3.1, 1.3, 1.4));
+    this.addBlockerFromCenter(new Vector3(-7.15, 0.55, 5.15), new Vector3(4.1, 1.3, 1.4));
 
     const planterLeft = await this.createPlanter();
     planterLeft.position.set(-8.3, 0, 7.2);
     this.scene.add(planterLeft);
 
     const planterRight = await this.createPlanter();
-    planterRight.position.set(8.3, 0, 7.2);
+    planterRight.position.set(-6.3, 0, 7.2);
     this.scene.add(planterRight);
   }
 

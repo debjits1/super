@@ -115,7 +115,7 @@ export const portfolioPanels: Record<HotspotId, PortfolioPanel> = {
       'Available for high-impact contract and advisory work',
       'GitHub, LinkedIn, and email—pick your channel',
     ],
-    ctaLabel: '',
-    ctaHref: 'mailto:hello@example.com',
+    ctaLabel: 'Contact',
+    ctaHref: 'https://www.linkedin.com/in/frontend-ninja/',
   },
 };
