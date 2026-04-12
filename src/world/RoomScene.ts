@@ -454,7 +454,7 @@ export class RoomScene {
   private async buildAmbientProps(
     deskMaterial: MeshStandardMaterial,
     darkMaterial: MeshStandardMaterial,
-    glowMaterial: MeshStandardMaterial,
+    _glowMaterial: MeshStandardMaterial,
   ) {
     const lounge = new Group();
     lounge.position.set(-7.15, 0, 5.15);
@@ -474,16 +474,16 @@ export class RoomScene {
     this.scene.add(lounge);
     this.addBlockerFromCenter(new Vector3(-7.15, 0.55, 5.15), new Vector3(3.1, 1.3, 1.4));
 
-    const planterLeft = await this.createPlanter(darkMaterial, glowMaterial);
+    const planterLeft = await this.createPlanter();
     planterLeft.position.set(-8.3, 0, 7.2);
     this.scene.add(planterLeft);
 
-    const planterRight = await this.createPlanter(darkMaterial, glowMaterial);
+    const planterRight = await this.createPlanter();
     planterRight.position.set(8.3, 0, 7.2);
     this.scene.add(planterRight);
   }
 
-  private async createPlanter(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
+  private async createPlanter() {
     const gltf = await this.gltfLoader.loadAsync('/resources/models/pot_plant.glb');
     const planter = gltf.scene;
     planter.scale.set(10, 10, 10);
