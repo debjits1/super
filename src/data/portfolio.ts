@@ -107,9 +107,9 @@ export const portfolioPanels: Record<HotspotId, PortfolioPanel> = {
   contact: {
     id: 'contact',
     title: 'Contact Terminal',
-    kicker: 'Available for full-time roles, contract work, and technical collaboration',
+    kicker: 'Available for full-time roles, and technical collaboration',
     body:
-      'Actively open to discussions about high-impact engineering roles, architectural consulting, and open-source collaboration. Prefer organizations focused on performance, scalability, and measurable user outcomes.',
+      'Actively open to discussions about high-impact engineering roles, and open-source collaboration. Prefer organizations focused on performance, scalability, and measurable user outcomes.',
     highlights: [
       'Open for full-time senior/staff engineer roles in web and system architecture',
       'Available for high-impact contract and advisory work',
