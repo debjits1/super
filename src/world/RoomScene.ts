@@ -485,7 +485,7 @@ export class RoomScene {
     this.scene.add(planterLeft);
 
     const planterRight = await this.createPlanter();
-    planterRight.position.set(-6.3, 0, 7.2);
+    planterRight.position.set(-6, 0, 7.2);
     this.scene.add(planterRight);
   }
 
