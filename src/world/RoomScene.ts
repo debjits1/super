@@ -175,7 +175,7 @@ export class RoomScene {
         id: 'skills',
         title: 'Skills Lab',
         prompt: 'Inspect strengths and tools',
-        position: new Vector3(-7.2, 0, -2.3),
+        position: new Vector3(-6.8, 0, -2.3),
         color: '#9fffa8',
       }),
       this.createHotspot({
