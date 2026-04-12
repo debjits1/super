@@ -19,7 +19,7 @@ import {
   TorusGeometry,
   Vector3,
 } from 'three';
-import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 import type { HotspotId } from '../data/portfolio';
 
@@ -36,7 +36,7 @@ export class RoomScene {
   readonly roomBounds = new Box3(new Vector3(-9.2, 0, -8.2), new Vector3(9.2, 5.6, 8.2));
   readonly blockers: Box3[] = [];
   readonly hotspots: Hotspot[] = [];
-  private fbxLoader = new FBXLoader();
+  private gltfLoader = new GLTFLoader();
   private workstationGroup: Group | null = null;
 
   constructor() {
@@ -285,7 +285,8 @@ export class RoomScene {
 
   private async loadWorkstationModel() {
     try {
-      const workstation = await this.fbxLoader.loadAsync('/resources/models/workstation.fbx');
+      const gltf = await this.gltfLoader.loadAsync('/resources/models/low_poly_gaming_desk.glb');
+      const workstation = gltf.scene;
       
       // Remove any existing workstation if reloading
       if (this.workstationGroup) {
@@ -293,11 +294,11 @@ export class RoomScene {
       }
       
       this.workstationGroup = new Group();
-      this.workstationGroup.position.set(0, 0, -4.2);
-      this.workstationGroup.rotation.y = -Math.PI / 2;
+      this.workstationGroup.position.set(0.7, 1.5, -5.2);
+      // this.workstationGroup.rotation.y = (Math.PI);
       
       // Scale down the model to fit the scene (original is ~837 units, we need ~5)
-      const scale = 0.005;
+      const scale = 2;
       workstation.scale.set(scale, scale, scale);
       
       workstation.traverse((child) => {
@@ -450,7 +451,7 @@ export class RoomScene {
   //   this.addBlockerFromCenter(new Vector3(0, 1.1, 6.2), new Vector3(2.4, 2.4, 1.8));
   // }
 
-  private buildAmbientProps(
+  private async buildAmbientProps(
     deskMaterial: MeshStandardMaterial,
     darkMaterial: MeshStandardMaterial,
     glowMaterial: MeshStandardMaterial,
@@ -473,32 +474,19 @@ export class RoomScene {
     this.scene.add(lounge);
     this.addBlockerFromCenter(new Vector3(-7.15, 0.55, 5.15), new Vector3(3.1, 1.3, 1.4));
 
-    const planterLeft = this.createPlanter(darkMaterial, glowMaterial);
+    const planterLeft = await this.createPlanter(darkMaterial, glowMaterial);
     planterLeft.position.set(-8.3, 0, 7.2);
     this.scene.add(planterLeft);
 
-    const planterRight = this.createPlanter(darkMaterial, glowMaterial);
+    const planterRight = await this.createPlanter(darkMaterial, glowMaterial);
     planterRight.position.set(8.3, 0, 7.2);
     this.scene.add(planterRight);
   }
 
-  private createPlanter(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
-    const planter = new Group();
-    const pot = new Mesh(new CylinderGeometry(0.38, 0.52, 0.6, 12), darkMaterial);
-    pot.position.y = 0.3;
-    planter.add(pot);
-
-    for (const [x, y, z] of [
-      [0, 1.2, 0],
-      [0.22, 1.05, 0.12],
-      [-0.22, 1.1, -0.08],
-      [0.06, 1.32, -0.18],
-    ]) {
-      const leaf = new Mesh(new SphereGeometry(0.26, 14, 14), glowMaterial);
-      leaf.position.set(x, y, z);
-      leaf.scale.set(1, 1.4, 0.8);
-      planter.add(leaf);
-    }
+  private async createPlanter(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
+    const gltf = await this.gltfLoader.loadAsync('/resources/models/pot_plant.glb');
+    const planter = gltf.scene;
+    planter.scale.set(10, 10, 10);
 
     return planter;
   }

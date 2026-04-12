@@ -49,10 +49,12 @@ export const portfolioPanels: Record<HotspotId, PortfolioPanel> = {
   'project-archive': {
     id: 'project-archive',
     title: 'Project Archive Wall',
-    kicker: 'Supporting work across healthcare, fintech, and fantasy sports',
+    kicker: 'Supporting work across video streaming, healthcare, and fantasy sports',
     body:
       'Earlier-career projects and supporting builds that demonstrate breadth across domains. Includes healthcare platforms, admin dashboards, e-commerce systems, and API backends using diverse stacks.',
     highlights: [
+      'JioHotstar: Performance optimizations and feature development for India\'s largest OTT platform, serving 500M+ users',
+      'JioCinema: Complete rewrite using Next.js and SSR, achieving 51% LCP reduction and 2x impressions growth',
       'Ayva Healthcare Platform: Lead frontend development with React component library and multi-language support',
       'Real Fantasy Teams: Full-stack admin interface and Node.js/MongoDB REST APIs for player management and scoring',
       'E-commerce systems, Joomla/WordPress customization, and responsive SPAs across multiple B2B and B2C products',
@@ -113,7 +115,7 @@ export const portfolioPanels: Record<HotspotId, PortfolioPanel> = {
       'Available for high-impact contract and advisory work',
       'GitHub, LinkedIn, and email—pick your channel',
     ],
-    ctaLabel: 'Send Email',
+    ctaLabel: '',
     ctaHref: 'mailto:hello@example.com',
   },
 };
