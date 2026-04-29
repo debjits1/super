@@ -16,7 +16,7 @@ import {
   PointLight,
   Scene,
   SphereGeometry,
-  TextureLoader,
+  // TextureLoader,
   TorusGeometry,
   Vector3,
 } from 'three';
