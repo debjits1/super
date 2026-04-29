@@ -1,4 +1,6 @@
 import type { HotspotId, PortfolioPanel } from '../data/portfolio';
+import { portfolioPanels } from '../data/portfolio';
+import type { MusicPlayer } from '../player/MusicPlayer';
 
 type Direction = 'up' | 'down' | 'left' | 'right';
 
@@ -6,6 +8,7 @@ type OverlayOptions = {
   onDirectionChange: (direction: Direction, pressed: boolean) => void;
   onInteract: () => void;
   onClosePanel: () => void;
+  musicPlayer?: MusicPlayer;
 };
 
 export class OverlayUI {
@@ -20,6 +23,12 @@ export class OverlayUI {
   private readonly panelList: HTMLUListElement;
   private readonly panelLink: HTMLAnchorElement;
   private readonly interactButton: HTMLButtonElement;
+  private readonly volumeButton: HTMLButtonElement;
+  private readonly volumeSlider: HTMLInputElement;
+  private readonly readingModeContainer: HTMLDivElement;
+  private readonly nowPlayingNotification: HTMLDivElement;
+  private nowPlayingTimeout: number | null = null;
+  private isReadingMode = false;
 
   constructor(private readonly options: OverlayOptions) {
     this.root = document.createElement('div');
@@ -54,6 +63,33 @@ export class OverlayUI {
     const closeButton = this.panel.querySelector('button');
     closeButton?.addEventListener('click', () => this.options.onClosePanel());
 
+    this.nowPlayingNotification = document.createElement('div');
+    this.nowPlayingNotification.className = 'now-playing-notification is-hidden';
+    this.nowPlayingNotification.innerHTML = `
+      <div class="now-playing-content">
+        <p class="now-playing-label">Now Playing</p>
+        <p class="now-playing-track"></p>
+      </div>
+    `;
+
+    const desktopVolumeControl = document.createElement('div');
+    desktopVolumeControl.className = 'desktop-volume-control';
+    desktopVolumeControl.innerHTML = `
+      <svg class="volume-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M15.54 8.46a7 7 0 0 1 0 9.9M20 12a9.9 9.9 0 0 1 0 0"></path>
+      </svg>
+      <input type="range" class="volume-slider" min="0" max="100" value="50" aria-label="Volume control">
+    `;
+    this.volumeSlider = desktopVolumeControl.querySelector('.volume-slider') as HTMLInputElement;
+    this.volumeSlider.addEventListener('input', (e) => {
+      const value = parseInt((e.target as HTMLInputElement).value);
+      this.options.musicPlayer?.setVolume(value / 100);
+    });
+
+    this.readingModeContainer = document.createElement('div');
+    this.readingModeContainer.className = 'reading-mode-container is-hidden';
+
     const mobileControls = document.createElement('div');
     mobileControls.className = 'mobile-controls';
     mobileControls.append(
@@ -62,9 +98,12 @@ export class OverlayUI {
     );
 
     this.interactButton = mobileControls.querySelector('.interact-button') as HTMLButtonElement;
+    this.volumeButton = mobileControls.querySelector('.volume-button') as HTMLButtonElement;
 
-    this.root.append(this.prompt, this.panel, mobileControls);
+    this.root.append(this.prompt, this.panel, this.nowPlayingNotification, this.readingModeContainer, desktopVolumeControl, mobileControls);
     document.body.append(this.root);
+    
+    this.buildReadingMode();
   }
 
   setActiveHotspot(payload: { id: HotspotId; title: string; prompt: string } | null) {
@@ -100,7 +139,28 @@ export class OverlayUI {
     this.panel.classList.add('is-hidden');
   }
 
+  showNowPlaying(trackName: string) {
+    const trackElement = this.nowPlayingNotification.querySelector('.now-playing-track');
+    if (trackElement) {
+      trackElement.textContent = trackName;
+    }
+    
+    this.nowPlayingNotification.classList.remove('is-hidden');
+
+    if (this.nowPlayingTimeout !== null) {
+      clearTimeout(this.nowPlayingTimeout);
+    }
+
+    this.nowPlayingTimeout = window.setTimeout(() => {
+      this.nowPlayingNotification.classList.add('is-hidden');
+      this.nowPlayingTimeout = null;
+    }, 5000);
+  }
+
   dispose() {
+    if (this.nowPlayingTimeout !== null) {
+      clearTimeout(this.nowPlayingTimeout);
+    }
     this.root.remove();
   }
 
@@ -208,7 +268,127 @@ export class OverlayUI {
     interact.disabled = true;
     interact.addEventListener('click', () => this.options.onInteract());
 
-    cluster.append(interact);
+    const volume = document.createElement('button');
+    volume.className = 'volume-button';
+    volume.type = 'button';
+    volume.setAttribute('aria-label', 'Toggle volume');
+    volume.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M15.54 8.46a7 7 0 0 1 0 9.9M20 12a9.9 9.9 0 0 1 0 0"></path>
+      </svg>
+    `;
+    volume.addEventListener('click', () => this.handleVolumeToggle());
+
+    cluster.append(interact, volume);
     return cluster;
+  }
+
+  addReadingModeButton() {
+    const readingButton = document.createElement('button');
+    readingButton.className = 'reading-mode-toggle';
+    readingButton.type = 'button';
+    readingButton.setAttribute('aria-label', 'Toggle reading mode');
+    readingButton.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+    `;
+    readingButton.addEventListener('click', () => this.toggleReadingMode());
+    this.root.append(readingButton);
+  }
+
+  private handleVolumeToggle() {
+    if (this.options.musicPlayer) {
+      this.options.musicPlayer.toggleMute();
+      this.updateVolumeButton();
+    }
+  }
+
+  private updateVolumeButton() {
+    if (!this.options.musicPlayer) return;
+    
+    const volume = this.options.musicPlayer.getVolume();
+    const opacity = volume === 0 ? 0.5 : 1;
+    this.volumeButton.style.opacity = opacity.toString();
+    
+    if (this.volumeSlider) {
+      this.volumeSlider.value = (volume * 100).toString();
+    }
+  }
+
+  toggleReadingMode() {
+    this.isReadingMode = !this.isReadingMode;
+    
+    if (this.isReadingMode) {
+      this.readingModeContainer.classList.remove('is-hidden');
+      document.body.style.overflow = 'hidden';
+    } else {
+      this.readingModeContainer.classList.add('is-hidden');
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  private buildReadingMode() {
+    const header = document.createElement('div');
+    header.className = 'reading-mode-header';
+    header.innerHTML = `
+      <h1 class="reading-mode-title">Portfolio</h1>
+      <button class="reading-mode-close" type="button" aria-label="Exit reading mode">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    `;
+
+    const closeButton = header.querySelector('.reading-mode-close') as HTMLButtonElement;
+    closeButton.addEventListener('click', () => this.toggleReadingMode());
+
+    const content = document.createElement('div');
+    content.className = 'reading-mode-content';
+
+    const sectionIds: HotspotId[] = ['about', 'featured-projects', 'project-archive', 'skills', 'experience', 'achievements', 'contact'];
+
+    sectionIds.forEach((id) => {
+      const panel = portfolioPanels[id];
+      if (panel) {
+        const section = document.createElement('section');
+        section.className = 'reading-mode-section';
+
+        const kicker = document.createElement('p');
+        kicker.className = 'reading-mode-kicker';
+        kicker.textContent = panel.kicker;
+
+        const title = document.createElement('h2');
+        title.className = 'reading-mode-section-title';
+        title.textContent = panel.title;
+
+        const body = document.createElement('p');
+        body.className = 'reading-mode-body';
+        body.textContent = panel.body;
+
+        const highlights = document.createElement('ul');
+        highlights.className = 'reading-mode-highlights';
+        panel.highlights.forEach((highlight) => {
+          const li = document.createElement('li');
+          li.textContent = highlight;
+          highlights.append(li);
+        });
+
+        const cta = document.createElement('a');
+        cta.className = 'reading-mode-cta';
+        cta.href = panel.ctaHref;
+        cta.target = '_blank';
+        cta.rel = 'noreferrer';
+        cta.textContent = panel.ctaLabel;
+
+        section.append(kicker, title, body, highlights, cta);
+        content.append(section);
+      }
+    });
+
+    this.readingModeContainer.append(header, content);
   }
 }

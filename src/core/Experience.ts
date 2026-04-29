@@ -9,6 +9,7 @@ import {
 
 import { portfolioPanels } from '../data/portfolio';
 import { PlayerController } from '../player/PlayerController';
+import { MusicPlayer } from '../player/MusicPlayer';
 import { OverlayUI } from '../ui/OverlayUI';
 import { RoomScene } from '../world/RoomScene';
 import { InputController } from './Input';
@@ -21,6 +22,7 @@ export class Experience {
   private readonly input = new InputController();
   private readonly room = new RoomScene();
   private readonly player = new PlayerController();
+  private readonly musicPlayer = new MusicPlayer();
   private readonly cameraTarget = new Vector3();
   private readonly cameraOffset = new Vector3(0, 5, 6.8);
   private readonly introCameraPosition = new Vector3(3.2, 4.6, 10.8);
@@ -31,6 +33,7 @@ export class Experience {
   private animationFrame = 0;
   private introElapsed = 0;
   private readonly introDuration = 1.8;
+  private musicStarted = false;
 
   constructor(private readonly target: HTMLElement) {
     this.renderer = new WebGLRenderer({ antialias: true, alpha: false });
@@ -50,6 +53,13 @@ export class Experience {
       onDirectionChange: (direction, pressed) => this.input.setVirtualDirection(direction, pressed),
       onInteract: () => this.tryInteract(),
       onClosePanel: () => this.ui.hidePanel(),
+      musicPlayer: this.musicPlayer,
+    });
+
+    this.ui.addReadingModeButton();
+
+    this.musicPlayer.setOnTrackChange((trackName) => {
+      this.ui.showNowPlaying(trackName);
     });
 
     Promise.all([
@@ -70,6 +80,7 @@ export class Experience {
     window.removeEventListener('resize', this.onResize);
     this.input.dispose();
     this.ui.dispose();
+    this.musicPlayer.dispose();
     this.renderer.dispose();
   }
 
@@ -80,6 +91,15 @@ export class Experience {
 
     if (introActive) {
       this.introElapsed += delta;
+    }
+
+    // Start music on first user interaction (after intro ends)
+    if (!this.musicStarted && !introActive) {
+      const hasUserInput = snapshot.forward || snapshot.backward || snapshot.left || snapshot.right || snapshot.interactPressed;
+      if (hasUserInput) {
+        this.musicStarted = true;
+        this.musicPlayer.start();
+      }
     }
 
     this.player.update(
