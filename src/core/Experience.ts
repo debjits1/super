@@ -72,12 +72,14 @@ export class Experience {
     });
 
     window.addEventListener('resize', this.onResize);
+    window.addEventListener('click', this.onWindowClick);
     this.animate();
   }
 
   dispose() {
     cancelAnimationFrame(this.animationFrame);
     window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('click', this.onWindowClick);
     this.input.dispose();
     this.ui.dispose();
     this.musicPlayer.dispose();
@@ -189,6 +191,13 @@ export class Experience {
     const panel = portfolioPanels[this.activeHotspotId];
     this.ui.showPanel(panel);
   }
+
+  private onWindowClick = () => {
+    if (!this.musicStarted && this.introElapsed >= this.introDuration) {
+      this.musicStarted = true;
+      this.musicPlayer.start();
+    }
+  };
 
   private onResize = () => {
     this.camera.aspect = window.innerWidth / window.innerHeight;
