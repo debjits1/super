@@ -60,7 +60,7 @@ export class MusicPlayer {
     this.audio.src = audioPath;
     this.audio.play().catch((error) => {
       console.warn('Failed to play audio:', error);
-      this.playNext();
+      // this.playNext();
     });
 
     this.onTrackChange?.(trackName);
