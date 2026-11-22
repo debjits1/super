@@ -257,7 +257,7 @@ export class RoomScene {
     this.buildProjectArchive(darkMaterial, glowMaterial);
     this.buildSkillsLab(darkMaterial, glowMaterial);
     this.buildExperienceArchive(darkMaterial, glowMaterial);
-    this.buildAchievementsCorner(darkMaterial, glowMaterial);
+    this.buildAchievementsCorner(darkMaterial);
     // this.buildContactTerminal(darkMaterial, glowMaterial);
     this.buildAmbientProps(deskMaterial, darkMaterial, glowMaterial);
 
@@ -824,7 +824,7 @@ export class RoomScene {
     this.addBlockerFromCenter(new Vector3(-7.7, 1.55, 1.4), new Vector3(1.2, 3.2, 6.2));
   }
 
-  private buildAchievementsCorner(darkMaterial: MeshStandardMaterial, glowMaterial: MeshStandardMaterial) {
+  private buildAchievementsCorner(darkMaterial: MeshStandardMaterial) {
     const showcase = new Group();
     showcase.position.set(6.7, 0, 3.6);
 
