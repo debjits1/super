@@ -79,7 +79,7 @@ export class OverlayUI {
         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
         <path d="M15.54 8.46a7 7 0 0 1 0 9.9M20 12a9.9 9.9 0 0 1 0 0"></path>
       </svg>
-      <input type="range" class="volume-slider" min="0" max="100" value="50" aria-label="Volume control">
+      <input type="range" class="volume-slider" min="0" max="100" value="5" aria-label="Volume control">
     `;
     this.volumeSlider = desktopVolumeControl.querySelector('.volume-slider') as HTMLInputElement;
     this.volumeSlider.addEventListener('input', (e) => {

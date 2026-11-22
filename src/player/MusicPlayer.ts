@@ -4,7 +4,7 @@ export class MusicPlayer {
   private currentIndex = 0;
   private isPlaying = false;
   private onTrackChange: ((trackName: string) => void) | null = null;
-  private volume = 0.5; // 50% initial volume
+  private volume = 0.025; // 5% initial volume
   private musicFiles = [
     'A Stroll Alone - Everet Almond.mp3',
     'Bazaar Ballad - Patrick Patrikios.mp3',
@@ -97,7 +97,7 @@ export class MusicPlayer {
   }
 
   toggleMute() {
-    this.setVolume(this.volume === 0 ? 0.5 : 0);
+    this.setVolume(this.volume === 0 ? 0.025 : 0);
   }
 
   dispose() {

@@ -26,7 +26,8 @@ export const portfolioPanels: Record<HotspotId, PortfolioPanel> = {
       'Full-stack engineer with 10+ years of experience building high-performance web applications at scale. Specialized in optimizing user experience on constraint-heavy platforms and leading cross-functional teams. Proven track record of delivering measurable impact: 51% LCP reduction, 2x impressions growth, and 60% organic traffic increase across major OTT platforms.',
     highlights: [
       'Performance optimization and web vitals excellence across consumer and enterprise platforms',
-      'Full-stack development: React, Next.js, Node.js, Java, with focus on scalability',
+      'Full-stack development: React, Next.js, Node.js, Java, AWS, Docker, and Kubernetes, with focus on scalability',
+      'AI-assisted engineering workflows using Claude, Codex, and custom skills',
       'Team leadership and technical architecture for fast-growing products with millions of daily users',
     ],
     ctaLabel: 'Open LinkedIn',
@@ -69,9 +70,10 @@ export const portfolioPanels: Record<HotspotId, PortfolioPanel> = {
     body:
       'Hands-on capabilities across modern frontend frameworks, backend systems, and DevOps tooling. Deep expertise in web performance optimization, architectural patterns, and team-scale best practices.',
     highlights: [
+      'AI Tooling: Claude, Codex, Custom Skills',
       'Frontend: React, Next.js, Angular, TypeScript, Tailwind CSS, Redux, Material UI, responsive design',
       'Backend: Node.js, Java, REST APIs, MongoDB, server-side rendering, architectural patterns',
-      'DevOps & Tooling: Git, Docker, Webpack, Babel, Maven, performance profiling, web vitals optimization',
+      'DevOps & Tooling: AWS, Docker, Kubernetes, GitHub Actions, Webpack, Babel, Maven, performance profiling, web vitals optimization',
     ],
     ctaLabel: 'Open Resume',
     ctaHref: '#',
