@@ -26,6 +26,7 @@ export class OverlayUI {
   private readonly volumeButton: HTMLButtonElement;
   private readonly volumeSlider: HTMLInputElement;
   private readonly readingModeContainer: HTMLDivElement;
+  private readingModeButton: HTMLButtonElement | null = null;
   private readonly nowPlayingNotification: HTMLDivElement;
   private nowPlayingTimeout: number | null = null;
   private isReadingMode = false;
@@ -89,6 +90,7 @@ export class OverlayUI {
 
     this.readingModeContainer = document.createElement('div');
     this.readingModeContainer.className = 'reading-mode-container is-hidden';
+    this.readingModeContainer.id = 'reading-mode-container';
 
     const mobileControls = document.createElement('div');
     mobileControls.className = 'mobile-controls';
@@ -161,6 +163,17 @@ export class OverlayUI {
     if (this.nowPlayingTimeout !== null) {
       clearTimeout(this.nowPlayingTimeout);
     }
+    if (this.joystickPointerDownHandler) {
+      window.removeEventListener('pointerdown', this.joystickPointerDownHandler);
+    }
+    if (this.joystickPointerMoveHandler) {
+      window.removeEventListener('pointermove', this.joystickPointerMoveHandler);
+    }
+    if (this.joystickPointerUpHandler) {
+      window.removeEventListener('pointerup', this.joystickPointerUpHandler);
+      window.removeEventListener('pointercancel', this.joystickPointerUpHandler);
+    }
+    (Object.keys(this.joystickState) as Direction[]).forEach((direction) => this.setDirectionState(direction, false));
     this.root.remove();
   }
 
@@ -172,6 +185,9 @@ export class OverlayUI {
   };
 
   private activePointerId: number | null = null;
+  private joystickPointerDownHandler: ((event: PointerEvent) => void) | null = null;
+  private joystickPointerMoveHandler: ((event: PointerEvent) => void) | null = null;
+  private joystickPointerUpHandler: ((event: PointerEvent) => void) | null = null;
 
   private buildDirectionPad() {
     const pad = document.createElement('div');
@@ -207,6 +223,7 @@ export class OverlayUI {
 
     const resetJoystick = () => {
       knob.style.transform = 'translate(0, 0)';
+      pad.classList.remove('is-active');
       Object.keys(this.joystickState).forEach((direction) => {
         if (this.joystickState[direction as Direction]) {
           this.setDirectionState(direction as Direction, false);
@@ -234,16 +251,26 @@ export class OverlayUI {
       window.removeEventListener('pointercancel', onPointerUp);
     };
 
-    base.style.touchAction = 'none';
-    base.addEventListener('pointerdown', (event) => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (this.activePointerId !== null || (event.pointerType !== 'touch' && event.pointerType !== 'pen')) return;
+      if (!window.matchMedia('(max-width: 900px)').matches) return;
+      if (!(event.target instanceof HTMLCanvasElement) || !event.target.classList.contains('experience-canvas')) return;
+
       event.preventDefault();
-      base.setPointerCapture(event.pointerId);
       this.activePointerId = event.pointerId;
+      base.style.left = `${event.clientX}px`;
+      base.style.top = `${event.clientY}px`;
+      pad.classList.add('is-active');
       updateJoystick(event.clientX, event.clientY);
       window.addEventListener('pointermove', onPointerMove, { passive: false });
       window.addEventListener('pointerup', onPointerUp, { passive: false });
       window.addEventListener('pointercancel', onPointerUp, { passive: false });
-    }, { passive: false });
+    };
+
+    this.joystickPointerDownHandler = onPointerDown;
+    this.joystickPointerMoveHandler = onPointerMove;
+    this.joystickPointerUpHandler = onPointerUp;
+    window.addEventListener('pointerdown', onPointerDown, { passive: false });
 
     return pad;
   }
@@ -288,14 +315,21 @@ export class OverlayUI {
     const readingButton = document.createElement('button');
     readingButton.className = 'reading-mode-toggle';
     readingButton.type = 'button';
-    readingButton.setAttribute('aria-label', 'Toggle reading mode');
+    readingButton.setAttribute('aria-label', 'Open recruiter-friendly portfolio reading view');
+    readingButton.setAttribute('aria-controls', this.readingModeContainer.id);
+    readingButton.setAttribute('aria-expanded', 'false');
     readingButton.innerHTML = `
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
         <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
       </svg>
+      <span class="reading-mode-button-copy">
+        <span class="reading-mode-button-kicker">Recruiter view</span>
+        <span class="reading-mode-button-label">Read portfolio</span>
+      </span>
     `;
     readingButton.addEventListener('click', () => this.toggleReadingMode());
+    this.readingModeButton = readingButton;
     this.root.append(readingButton);
   }
 
@@ -320,6 +354,13 @@ export class OverlayUI {
 
   toggleReadingMode() {
     this.isReadingMode = !this.isReadingMode;
+    this.readingModeButton?.setAttribute('aria-expanded', this.isReadingMode.toString());
+    this.readingModeButton?.setAttribute(
+      'aria-label',
+      this.isReadingMode ? 'Exit portfolio reading view' : 'Open recruiter-friendly portfolio reading view',
+    );
+    const buttonLabel = this.readingModeButton?.querySelector('.reading-mode-button-label');
+    if (buttonLabel) buttonLabel.textContent = this.isReadingMode ? 'Exit reading view' : 'Read portfolio';
     
     if (this.isReadingMode) {
       this.readingModeContainer.classList.remove('is-hidden');

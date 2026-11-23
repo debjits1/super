@@ -33,6 +33,7 @@ a {
 .experience-canvas {
   display: block;
   height: 100%;
+  touch-action: none;
   width: 100%;
 }
 
@@ -147,10 +148,10 @@ a {
 }
 
 .direction-joystick {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  pointer-events: auto;
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 20;
 }
 
 .joystick-base {
@@ -161,8 +162,18 @@ a {
   display: flex;
   height: 5.5rem;
   justify-content: center;
-  position: relative;
+  left: 4rem;
+  opacity: 0;
+  pointer-events: none;
+  position: fixed;
+  top: calc(100% - 4rem);
+  transform: translate(-50%, -50%);
+  transition: opacity 100ms ease;
   width: 5.5rem;
+}
+
+.direction-joystick.is-active .joystick-base {
+  opacity: 1;
 }
 
 .joystick-knob {
@@ -396,35 +407,65 @@ a {
 
 .reading-mode-toggle {
   position: fixed;
-  top: 1.25rem;
-  right: 1.25rem;
-  width: 3rem;
-  height: 3rem;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 0.75rem;
-  color: #fff3de;
+  top: max(1rem, env(safe-area-inset-top));
+  left: max(1rem, env(safe-area-inset-left));
+  min-height: 3.5rem;
+  padding: 0.55rem 1rem;
+  gap: 0.7rem;
+  background: linear-gradient(135deg, #ffd166, #ffad72);
+  border: 1px solid rgba(255, 239, 199, 0.9);
+  border-radius: 0.9rem;
+  color: #21160f;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: auto;
-  transition: all 200ms ease;
-  z-index: 999;
+  text-align: left;
+  transition: transform 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.38), 0 0 0 3px rgba(255, 209, 102, 0.16);
+  z-index: 1001;
 }
 
 .reading-mode-toggle:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.24);
+  filter: brightness(1.08);
+  box-shadow: 0 10px 32px rgba(0, 0, 0, 0.42), 0 0 0 4px rgba(255, 209, 102, 0.22);
+  transform: translateY(-1px);
 }
 
 .reading-mode-toggle:active {
   transform: scale(0.92);
 }
 
+.reading-mode-toggle:focus-visible {
+  outline: 3px solid #8fe7ff;
+  outline-offset: 3px;
+}
+
 .reading-mode-toggle svg {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.4rem;
+  height: 1.4rem;
+  flex: 0 0 auto;
+}
+
+.reading-mode-button-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.reading-mode-button-kicker {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+
+.reading-mode-button-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .reading-mode-container {
@@ -592,10 +633,19 @@ a {
   }
 
   .reading-mode-toggle {
-    top: 1rem;
-    right: 1rem;
-    width: 2.75rem;
-    height: 2.75rem;
+    top: max(0.75rem, env(safe-area-inset-top));
+    left: max(0.75rem, env(safe-area-inset-left));
+    min-height: 3.25rem;
+    padding: 0.45rem 0.8rem;
+    gap: 0.55rem;
+  }
+
+  .reading-mode-button-kicker {
+    font-size: 0.58rem;
+  }
+
+  .reading-mode-button-label {
+    font-size: 0.82rem;
   }
 
   .reading-mode-header {
@@ -621,5 +671,21 @@ a {
 
   .reading-mode-body {
     font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .reading-mode-toggle {
+    min-height: 3rem;
+    padding: 0.4rem 0.65rem;
+    gap: 0.45rem;
+  }
+
+  .reading-mode-button-kicker {
+    font-size: 0.54rem;
+  }
+
+  .reading-mode-button-label {
+    font-size: 0.76rem;
   }
 }

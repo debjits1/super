@@ -222,6 +222,7 @@ export class RoomScene {
     const backWall = new Mesh(wallGeometry, wallMaterial);
     backWall.position.set(0, height * 0.5, -9);
     this.scene.add(backWall);
+    this.buildBackWallDetailing();
 
     const sideWallGeometry = new BoxGeometry(0.3, height, depth);
     const leftWall = new Mesh(sideWallGeometry, wallMaterial);
@@ -240,6 +241,51 @@ export class RoomScene {
     ceiling.rotation.x = Math.PI / 2;
     this.scene.add(ceiling);
 
+  }
+
+  private buildBackWallDetailing() {
+    const wallFace = -8.83;
+    const trimMaterial = new MeshStandardMaterial({ color: '#35495a', roughness: 0.72, metalness: 0.18 });
+    const insetMaterial = new MeshStandardMaterial({ color: '#1b2734', roughness: 0.82, metalness: 0.08 });
+    const brassMaterial = new MeshStandardMaterial({ color: '#b47d55', roughness: 0.48, metalness: 0.55 });
+    const accentMaterial = new MeshStandardMaterial({
+      color: '#54d9f3',
+      emissive: '#164557',
+      emissiveIntensity: 0.65,
+      roughness: 0.38,
+      metalness: 0.2,
+    });
+
+    const addPanel = (x: number, y: number, width: number, height: number) => {
+      const panel = new Mesh(new BoxGeometry(width, height, 0.035), insetMaterial);
+      panel.position.set(x, y, wallFace);
+      this.scene.add(panel);
+    };
+    const addTrim = (x: number, y: number, width: number, height: number, material = trimMaterial) => {
+      const trim = new Mesh(new BoxGeometry(width, height, 0.075), material);
+      trim.position.set(x, y, wallFace - 0.045);
+      this.scene.add(trim);
+    };
+
+    // A quiet rhythm of inset panels and rails gives the broad wall some depth.
+    addTrim(0, 0.2, 19.2, 0.16);
+    addTrim(0, 5.23, 19.2, 0.14);
+    for (const x of [-8.9, -6.1, -3.3, 3.3, 6.1, 8.9]) {
+      addPanel(x, 2.72, 2.35, 4.82);
+      addTrim(x - 1.18, 2.72, 0.055, 4.9);
+      addTrim(x + 1.18, 2.72, 0.055, 4.9);
+    }
+
+    // The center feature anchors the wall above the featured-project display.
+    addPanel(0, 3.1, 4.7, 2.75);
+    addTrim(0, 4.52, 4.9, 0.09, brassMaterial);
+    addTrim(0, 1.68, 4.9, 0.09, brassMaterial);
+    addTrim(-2.42, 3.1, 0.09, 2.92, brassMaterial);
+    addTrim(2.42, 3.1, 0.09, 2.92, brassMaterial);
+
+    const lightLine = new Mesh(new BoxGeometry(2.25, 0.035, 0.045), accentMaterial);
+    lightLine.position.set(0, 3.1, wallFace - 0.095);
+    this.scene.add(lightLine);
   }
 
   private buildSetPieces() {
